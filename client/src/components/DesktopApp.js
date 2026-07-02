@@ -15,11 +15,13 @@ import {
   CardContent,
   CardHeader,
   CardMeta,
+  Popup,
 } from "semantic-ui-react";
 import PresetSelector from "./PresetSelector";
 import { PRESET_DEFINITIONS } from "../presetDefinitions.js";
 import { CONTENT_DATA } from "../contentData.js";
 import "./DesktopApp.css";
+import useBuoyCoordinates from "./BuoyCoordinates";
 
 function DesktopApp({
   sidebarOpen,
@@ -178,7 +180,29 @@ function DesktopApp({
                             <Card fluid className="desktop-app-card">
                               <CardContent className="desktop-app-card-content">
                                 <CardHeader>{item.header}</CardHeader>
-                                <CardMeta>{item.meta}</CardMeta>
+                                <Card.Meta>
+                                  <Popup
+                                    hoverable
+                                    position="bottom center"
+                                    className="station-input-map-popup"
+                                    trigger={
+                                      <span className="desktop-card-subheader-map-trigger">
+                                        {item.meta}
+                                      </span>
+                                    }
+                                    content={
+                                      <iframe
+                                        title={`Buoy ${item.id} Location`}
+                                        className="station-input-map-tooltip-frame"
+                                        src={`https://www.google.com/maps?q=${encodeURIComponent(
+                                          item.meta,
+                                        )}&z=6&output=embed`}
+                                        loading="lazy"
+                                        referrerPolicy="no-referrer-when-downgrade"
+                                      />
+                                    }
+                                  />
+                                </Card.Meta>
                                 <div className="desktop-app-card-description">
                                   {handleGridCall(item)}
                                 </div>

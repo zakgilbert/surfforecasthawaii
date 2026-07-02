@@ -16,9 +16,8 @@ const StationInput = ({ id }) => {
   const [loading, setLoading] = useState(true);
   const [mainView, setMainView] = useState("buoy");
   const [chartView, setChartView] = useState("spectrum");
-  
-  const buoyCoordinates = useBuoyCoordinates(id);
 
+  const buoyCoordinates = useBuoyCoordinates(id);
 
   useEffect(() => {
     let alive = true;
@@ -149,20 +148,14 @@ const StationInput = ({ id }) => {
           `Buoy Station ${id}`,
         )}&output=embed`;
 
-  const buoyMap = (
-    <Segment className="station-input-segment station-input-map-segment">
-      <Header as="h4" className="station-input-section-title">
-        Buoy Location
-      </Header>
-
-      <iframe
-        title={`Buoy ${id} Location`}
-        className="station-input-map"
-        src={mapSrc}
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
-    </Segment>
+  const buoyMapTooltip = (
+    <iframe
+      title={`Buoy ${id} Location`}
+      className="station-input-map-tooltip-frame"
+      src={mapSrc}
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+    />
   );
 
   const chartContent =
@@ -183,7 +176,6 @@ const StationInput = ({ id }) => {
   if (isMobile) {
     return (
       <div className="station-input-mobile-wrap">
-        {buoyMap}
         <SummarySection />
         <Divider />
         <Segment className="station-input-segment">
@@ -227,8 +219,7 @@ const StationInput = ({ id }) => {
         <div className="station-input-details-full">{details}</div>
       ) : (
         <>
-          <div className="station-input-top-layout">
-            {buoyMap}
+          <div className="station-input-top-layout station-input-top-layout-summary-only">
             <SummarySection />
           </div>
 
