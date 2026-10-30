@@ -10,10 +10,36 @@ import BuoyTabs from "./BuoyTabs";
 import Power from "./Power";
 import { formatDate } from "../utility";
 
+// Uses the existing Flask getBuoyWind endpoint.
+const BUOY_WIND_ENDPOINT = (id) => `/api/buoy-wind/${id}`;
+
+// Seven fields to match the seven rows in the existing buoy table.
+const WIND_LABELS = {
+  WDIR: "Wind Direction",
+  WSPD: "Wind Speed",
+  GST: "Wind Gust",
+  PRES: "Atmospheric Pressure",
+  ATMP: "Air Temperature",
+  WTMP: "Water Temperature",
+  VIS: "Visibility",
+};
+
+const WIND_UNITS = {
+  WSPD: "mph",
+  GST: "mph",
+  PRES: "hPa",
+  ATMP: "°F",
+  WTMP: "°F",
+  VIS: "nmi",
+};
+
 const StationInput = ({ id }) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [windData, setWindData] = useState(null);
+  const [windError, setWindError] = useState(null);
+  const [windLoading, setWindLoading] = useState(true);
   const [mainView, setMainView] = useState("buoy");
   const [chartView, setChartView] = useState("spectrum");
 
@@ -61,6 +87,45 @@ const StationInput = ({ id }) => {
     };
   }, [id]);
 
+  // Fetch the latest wind observations independently of the existing buoy report.
+  useEffect(() => {
+    let alive = true;
+    const controller = new AbortController();
+
+    const loadWind = async () => {
+      try {
+        setWindLoading(true);
+        setWindError(null);
+        setWindData(null);
+
+        const res = await fetch(BUOY_WIND_ENDPOINT(id), {
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(`Wind data unavailable (${res.status})`);
+
+        const d = await res.json();
+        if (d?.error) throw new Error(d.error);
+        if (!Array.isArray(d?.cols) || !Array.isArray(d?.rows) || !d.rows.length) {
+          throw new Error("No wind observations available");
+        }
+        if (alive) setWindData(d);
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        console.error(`Error loading buoy wind ${id}:`, err);
+        if (alive) setWindError(err.message || "Failed to load wind data");
+      } finally {
+        if (alive) setWindLoading(false);
+      }
+    };
+
+    loadWind();
+
+    return () => {
+      alive = false;
+      controller.abort();
+    };
+  }, [id]);
+
   const ready = !!(data?.cols && data?.rows?.length);
 
   const summaryFields = useMemo(() => {
@@ -83,6 +148,18 @@ const StationInput = ({ id }) => {
 
     return dir ? [...base, dir] : base;
   }, [ready, data]);
+
+  const windFields = useMemo(() => {
+    if (!windData?.cols || !windData?.rows?.length) return [];
+    const windValues = new Map(
+      windData.cols.map((col, index) => [col.value, windData.rows[0][index]]),
+    );
+    // Keep the row order consistent even if NDBC changes the column order.
+    return Object.keys(WIND_LABELS).map((code) => ({
+      code,
+      value: windValues.get(code),
+    }));
+  }, [windData]);
 
   if (loading) {
     return (
@@ -138,6 +215,40 @@ const StationInput = ({ id }) => {
           </div>
         ))}
       </div>
+    </Segment>
+  );
+
+  const WindSection = () => (
+    <Segment className="station-input-segment station-input-summary-segment">
+      <Header as="h4" className="station-input-section-title">
+        {windData?.time ? formatDate(windData.time) : "Buoy Wind"}
+      </Header>
+      {windLoading || windError ? (
+        <div className="station-input-kv-list">
+          {windLoading ? "Loading wind observations..." : windError}
+        </div>
+      ) : (
+        <div className="station-input-kv-list">
+          {windFields.map(({ code, value }) => (
+            <div key={code} className="station-input-kv-row">
+              <div className="station-input-kv-label">{WIND_LABELS[code]}:</div>
+              <div className="station-input-kv-value">
+                {value == null || value === "MM" ? (
+                  "—"
+                ) : code === "WDIR" ? (
+                  <Popup
+                    content={<ArrowIndicator direction={Number(value)} />}
+                    trigger={<span>{value}&deg;</span>}
+                    position="top center"
+                  />
+                ) : (
+                  `${value} ${WIND_UNITS[code]}`
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </Segment>
   );
 
@@ -221,6 +332,7 @@ const StationInput = ({ id }) => {
         <>
           <div className="station-input-top-layout station-input-top-layout-summary-only">
             <SummarySection />
+            <WindSection />
           </div>
 
           <div className="station-input-chart-toggle-row">
