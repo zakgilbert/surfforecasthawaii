@@ -16,13 +16,13 @@
 }
 
 .station-input-desktop-wrap {
-  height: auto;
+  height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.5rem;
-  overflow: visible;
+  overflow: hidden;
 }
 
 /* ==========================
@@ -165,9 +165,9 @@
 =========================== */
 
 .station-input-chart-panel {
-  flex: 0 0 auto;
-  height: 350px;
-  min-height: 350px;
+  flex: 1 1 auto;
+  height: 0;
+  min-height: 260px;
   display: flex !important;
   flex-direction: column;
   overflow: hidden !important;
@@ -175,7 +175,7 @@
 
 .station-input-chart-fill {
   flex: 1 1 auto;
-  height: auto;
+  height: 100%;
   min-height: 0;
   overflow: hidden;
 }
