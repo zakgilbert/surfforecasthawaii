@@ -1,0 +1,26 @@
+/* Append to StationInput.css */
+.station-input-top-layout-with-wind {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.station-input-top-layout-with-wind > .station-input-summary-segment {
+  width: 100%;
+  min-width: 0;
+  margin: 0 !important;
+}
+
+.station-input-wind-status {
+  padding: 12px;
+  text-align: center;
+  color: #bdbdbd;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 850px) {
+  .station-input-top-layout-with-wind {
+    grid-template-columns: 1fr;
+  }
+}
