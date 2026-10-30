@@ -10,7 +10,7 @@ import HurricaneImage from "./components/Hurricane.js";
 import HawaiiWeatherRadarLoop from "./components/HawaiiWeatherRadarLoop.js";
 import WeatherForecast from "./components/WeatherForecast.js";
 import { CONTENT_DATA } from "./contentData.js";
-import { PRESET_DEFINITIONS } from "./constants.js";
+import { PRESET_DEFINITIONS } from "./presetDefinitions.js";
 
 /* ---------------- Date helpers ---------------- */
 
