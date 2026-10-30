@@ -119,6 +119,7 @@
   color: var(--muted-text);
   padding-right: 6px;
   line-height: 1.1;
+  text-align: left;
 }
 
 .station-input-kv-value {
@@ -127,6 +128,7 @@
   justify-self: end;
   color: var(--text);
   line-height: 1.1;
+  text-align: right;
 }
 
 /* ==========================
