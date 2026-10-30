@@ -11,6 +11,7 @@ from hurricane import *
 from hawaii_weather_radar_loop import *
 from weather_forecast import *
 from buoy_coordinates import *
+from BuoyWind import *
 import argparse
 
 app = Flask(__name__)
@@ -21,6 +22,10 @@ api = Blueprint('api', __name__, url_prefix='/api')
 @api.route('/report/<string:id>')
 def report(id):
     return getReport(id)
+
+@api.route('/buoy-wind/<string:id>')
+def buoyWind(id):
+    return (getBuoyWind(id)) 
 
 @api.route('/power/<string:id>')
 def power(id):
