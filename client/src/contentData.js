@@ -871,4 +871,12 @@ export const CONTENT_DATA = [
     header: "",
     meta: "",
   },
+  {
+    name: "Northern Hawaii One",
+    station: "51000",
+    id: 109,
+    tag: "buoy",
+    header: "Buoy Station 51000",
+    meta: "245 NM NE of Honolulu HI",
+  },
 ];

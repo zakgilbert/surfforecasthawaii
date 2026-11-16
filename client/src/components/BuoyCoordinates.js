@@ -32,7 +32,6 @@ const useBuoyCoordinates = (id) => {
 
     return () => controller.abort();
   }, [id]);
-
   return coords;
 };
 

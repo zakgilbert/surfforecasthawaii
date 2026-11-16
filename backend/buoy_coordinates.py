@@ -1,10 +1,12 @@
 import re
 import requests
+import sys
+import json
 from bs4 import BeautifulSoup
 from cache_config import cache
 
-@cache.memoize(timeout=8000)
-def get_buoy_coordinates(station_id):
+
+def fetch_buoy_coordinates(station_id):
     url = f"https://www.ndbc.noaa.gov/station_page.php?station={station_id}"
 
     r = requests.get(url, timeout=10)
@@ -13,9 +15,6 @@ def get_buoy_coordinates(station_id):
     soup = BeautifulSoup(r.text, "html.parser")
     text = soup.get_text(" ", strip=True)
 
-    # Matches:
-    # 22.285 N 159.574 W
-    # 17.070 N 157.755 W
     match = re.search(
         r"(\d+(?:\.\d+)?)\s*([NS])\s+(\d+(?:\.\d+)?)\s*([EW])",
         text,
@@ -39,3 +38,19 @@ def get_buoy_coordinates(station_id):
         "lat": lat,
         "lon": lon,
     }
+
+
+@cache.memoize(timeout=8000)
+def get_buoy_coordinates(station_id):
+    return fetch_buoy_coordinates(station_id)
+
+
+if __name__ == "__main__":
+    station_id = sys.argv[1] if len(sys.argv) > 1 else "51208"
+
+    try:
+        coordinates = fetch_buoy_coordinates(station_id)
+        print(json.dumps(coordinates, indent=2))
+    except requests.RequestException as e:
+        print(f"Error fetching buoy {station_id}: {e}", file=sys.stderr)
+        sys.exit(1)

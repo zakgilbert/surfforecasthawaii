@@ -44,6 +44,7 @@ const StationInput = ({ id }) => {
   const [chartView, setChartView] = useState("spectrum");
 
   const buoyCoordinates = useBuoyCoordinates(id);
+  console.log(buoyCoordinates);
 
   useEffect(() => {
     let alive = true;
@@ -105,7 +106,11 @@ const StationInput = ({ id }) => {
 
         const d = await res.json();
         if (d?.error) throw new Error(d.error);
-        if (!Array.isArray(d?.cols) || !Array.isArray(d?.rows) || !d.rows.length) {
+        if (
+          !Array.isArray(d?.cols) ||
+          !Array.isArray(d?.rows) ||
+          !d.rows.length
+        ) {
           throw new Error("No wind observations available");
         }
         if (alive) setWindData(d);
@@ -252,22 +257,34 @@ const StationInput = ({ id }) => {
     </Segment>
   );
 
-  const mapSrc =
-    buoyCoordinates?.lat != null && buoyCoordinates?.lon != null
-      ? `https://www.google.com/maps?q=${buoyCoordinates.lat},${buoyCoordinates.lon}&z=6&output=embed`
-      : `https://www.google.com/maps?q=${encodeURIComponent(
-          `Buoy Station ${id}`,
-        )}&output=embed`;
+  const buoyLatitude = buoyCoordinates?.lat;
+  const buoyLongitude = buoyCoordinates?.lon;
 
-  const buoyMapTooltip = (
+  const hasCoordinates =
+    buoyLatitude != null &&
+    buoyLongitude != null &&
+    Number.isFinite(Number(buoyLatitude)) &&
+    Number.isFinite(Number(buoyLongitude));
+
+  const mapSrc = hasCoordinates
+    ? `https://www.google.com/maps/embed/v1/place?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&q=${buoyLatitude},${buoyLongitude}&center=${buoyLatitude},${buoyLongitude}&zoom=7`
+    : null;
+  console.log("MAP DEBUG:", {
+    id,
+    buoyLatitude,
+    buoyLongitude,
+    mapSrc,
+  });
+  const buoyMapTooltip = mapSrc ? (
     <iframe
+      key={mapSrc}
       title={`Buoy ${id} Location`}
       className="station-input-map-tooltip-frame"
       src={mapSrc}
       loading="lazy"
       referrerPolicy="no-referrer-when-downgrade"
     />
-  );
+  ) : null;
 
   const chartContent =
     chartView === "spectrum" ? <WaveEnergy id={id} /> : <Power id={id} />;

@@ -7,6 +7,7 @@ export const LOOKUP = {
     "BARBERS_POINT": 41,
     "HANALEI": 1,
     "NORTH_WEST": 0,
+    "NORTHERN_HAWAII_ONE": 109,
     "SOUTHEAST_HAWAII": 7,
     "SOUTHWEST_HAWAII": 5,
     "WAIMEA_BAY": 9
