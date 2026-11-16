@@ -6,21 +6,47 @@
   justify-content: center;
 }
 
+.compass-svg {
+  display: block;
+  width: 64px;
+  height: 64px;
+}
+
+/* Compass outer circle */
+
+.compass-ring {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1;
+}
+
+/* Degree markings */
+
+.compass-tick {
+  stroke: #888;
+  stroke-width: 1;
+}
+
+.compass-tick.major {
+  stroke: #ccc;
+  stroke-width: 1.5;
+}
+
+/* Rotating original arrow */
+
 .arrow-rotate {
-  display: inline-flex;
-  transform: rotate(var(--rotation));
+  transform: rotate(var(--rotation, 0deg));
+  transform-origin: 32px 32px;
   transition: transform 0.2s ease;
 }
 
 .arrow-svg {
-  width: 18px;
-  height: 18px;
+  overflow: visible;
 }
 
-.arrow-head {
-  fill: var(--text);
-}
+/* Original arrow colors */
 
+.arrow-head,
 .arrow-body {
-  fill: var(--text);
+  fill: white;
 }
